@@ -24,7 +24,7 @@ AutoTrader/
 ├── rebalance_analysis.py    # 資產再平衡分析程式
 ├── twse_stock_fetcher.py    # 台股資料下載程式
 ├── requirements.txt         # 專案依賴套件
-└── README.md               # 專案說明文件
+└── README.md                # 專案說明文件
 ```
 
 ## 安裝需求
@@ -53,7 +53,7 @@ python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --
 
 參數說明：
 - `--data_file`: 股票資料檔案（預設：stock_2330_data.csv）
-- `--initial_capital`: 初始資金（預設：1000000）
+- `--initial_capital`: 初始資金（預設：1,000,000）
 - `--cash_ratio`: 現金比例（預設：0.5）
 - `--stock_ratio`: 股票比例（預設：0.5）
 - `--rebalance_threshold`: 再平衡觸發閾值（預設：0.5）
