@@ -86,7 +86,6 @@ python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --
 ## 注意事項
 
 1. 確保 `stockHistory` 目錄中有正確的股票資料檔案
-2. 交易成本設定為0.4%（買賣各0.2%）
 3. 建議先使用歷史數據進行回測
 4. 實盤交易前請先小額測試
 5. 定期檢視策略表現並進行優化
