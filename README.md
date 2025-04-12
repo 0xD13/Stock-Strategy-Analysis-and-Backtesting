@@ -38,13 +38,12 @@ pip install -r requirements.txt
 ### 1. 下載股票資料
 
 ```bash
-python twse_stock_fetcher.py --stock 2330 --start_date 2020-01-01 --end_date 2024-04-12
+python twse_stock_fetcher.py --stock 2330 --start_date 2020-01-01 
 ```
 
 參數說明：
 - `--stock`: 股票代碼（必填）
 - `--start_date`: 開始日期，格式：YYYY-MM-DD（必填）
-- `--end_date`: 結束日期，格式：YYYY-MM-DD（必填）
 
 ### 2. 執行資產再平衡分析
 
@@ -99,25 +98,3 @@ python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --
 3. 優化交易執行策略
 4. 加入更多資產類別
 5. 實現自動化交易功能
-
-## Prerequisites
-
-* **Python 3.9 or higher:** Ensure you have a compatible Python version installed.
-* **pip:** Python's package installer.
-
-## Installation
-
-### Standard Installation
-
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-```bash
-python twse_stock_fetcher.py --stock_symbol <stock_symbol>
-```
-
-* `--stock_symbol <stock_symbol>`: 指定股票代號，例如 00631L
-* `--start_date YYYYMMDD`: 開始日期，預設 20140101
