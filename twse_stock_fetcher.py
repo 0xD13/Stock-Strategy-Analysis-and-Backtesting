@@ -98,7 +98,7 @@ def main():
 
     stock_no = args.stock_symbol
     start_date = args.start_date
-    output_file = f'stock_{stock_no}_data.csv'
+    output_file = f'stockHistory/stock_{stock_no}_data.csv'
 
     print(f"開始抓取股票 {stock_no} 的資料...")
     fetch_stock_data(start_date, stock_no, output_file)
