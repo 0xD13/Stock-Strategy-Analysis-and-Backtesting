@@ -87,21 +87,92 @@ def fetch_stock_data(start_date, stock_no, output_file):
         time.sleep(1)  # 避免過快請求
 
 
+def get_taiwan_index_data(date):
+    url = f'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_HIST?date={date}'
+    response = requests.get(url)
+    if response.status_code == 200:
+        content = json.loads(response.text)
+        if 'data' in content and 'fields' in content:
+            return pd.DataFrame(data=content['data'], columns=content['fields'])
+    return None
+
+
+def process_and_save_taiwan_index(date, output_file):
+    date_str = date.strftime('%Y%m%d')
+    print(f"正在抓取 {date_str} 的大盤資料...")
+
+    df = get_taiwan_index_data(date_str)
+
+    if df is not None:
+        # 轉換欄位名稱並選擇需要的欄位
+        df_processed = pd.DataFrame({
+            'Date': df['日期'].apply(convert_date),
+            'Open': df['開盤指數'].str.replace(',', ''),
+            'High': df['最高指數'].str.replace(',', ''),
+            'Low': df['最低指數'].str.replace(',', ''),
+            'Close': df['收盤指數'].str.replace(',', '')
+        })
+
+        # 如果檔案不存在，寫入標頭；如果存在，追加資料
+        if not os.path.exists(output_file):
+            df_processed.to_csv(output_file, index=False, mode='w')
+        else:
+            df_processed.to_csv(output_file, index=False, mode='a', header=False)
+
+        return True
+    return False
+
+
+def fetch_taiwan_index_data(start_date, output_file):
+    # 檢查是否有現有檔案並取得最後日期
+    last_date = get_last_date_from_file(output_file)
+
+    if last_date:
+        print(f"檢測到現有資料，最後日期為 {last_date.strftime('%Y-%m-%d')}，從下個月開始抓取")
+        current_date = last_date
+    else:
+        print("沒有現有資料，從指定開始日期抓取")
+        current_date = datetime.strptime(start_date, '%Y%m%d')
+
+    end_date = datetime.now()
+
+    while current_date <= end_date:
+        success = process_and_save_taiwan_index(current_date, output_file)
+        if success:
+            print(f"{current_date.strftime('%Y-%m')} 資料處理完成")
+        else:
+            print(f"{current_date.strftime('%Y-%m')} 無資料或抓取失敗")
+
+        # 移到下個月
+        current_date = (current_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+        time.sleep(1)  # 避免過快請求
+
+
 def main():
     # 設定命令列參數
     parser = argparse.ArgumentParser(description='抓取台灣證交所股票歷史資料')
-    parser.add_argument('--stock_symbol', type=str, required=True, help='指定股票代號，例如 00631L')
+    parser.add_argument('--stock_symbol', type=str, help='指定股票代號，例如 00631L')
     parser.add_argument('--start_date', type=str, default='20140101', help='開始日期，格式 YYYYMMDD，預設 20140101')
+    parser.add_argument('--taiwan_index', action='store_true', help='是否抓取大盤指數資料')
 
     # 解析參數
     args = parser.parse_args()
 
-    stock_no = args.stock_symbol
-    start_date = args.start_date
-    output_file = f'stockHistory/stock_{stock_no}_data.csv'
+    if not args.stock_symbol and not args.taiwan_index:
+        parser.error("必須指定 --stock_symbol 或 --taiwan_index")
 
-    print(f"開始抓取股票 {stock_no} 的資料...")
-    fetch_stock_data(start_date, stock_no, output_file)
+    start_date = args.start_date
+
+    if args.taiwan_index:
+        output_file = 'stockHistory/taiwan_index_data.csv'
+        print("開始抓取大盤指數資料...")
+        fetch_taiwan_index_data(start_date, output_file)
+    else:
+        stock_no = args.stock_symbol
+        output_file = f'stockHistory/stock_{stock_no}_data.csv'
+        print(f"開始抓取股票 {stock_no} 的資料...")
+        fetch_stock_data(start_date, stock_no, output_file)
+
     print(f"所有資料已儲存至 {output_file}")
 
 

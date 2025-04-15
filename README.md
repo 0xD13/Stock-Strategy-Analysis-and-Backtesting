@@ -37,13 +37,24 @@ pip install -r requirements.txt
 
 ### 1. 下載股票資料
 
+#### 下載個股資料
 ```bash
-python twse_stock_fetcher.py --stock 2330 --start_date 2020-01-01 
+python twse_stock_fetcher.py --stock_symbol 2330 --start_date 20200101
+```
+
+#### 下載大盤指數資料
+```bash
+python twse_stock_fetcher.py --taiwan_index --start_date 20200101
 ```
 
 參數說明：
-- `--stock`: 股票代碼（必填）
-- `--start_date`: 開始日期，格式：YYYY-MM-DD（必填）
+- `--stock_symbol`: 股票代碼（與 --taiwan_index 二選一）
+- `--taiwan_index`: 是否下載大盤指數資料（與 --stock_symbol 二選一）
+- `--start_date`: 開始日期，格式：YYYYMMDD（預設：20140101）
+
+輸出檔案：
+- 個股資料：`stockHistory/stock_{股票代碼}_data.csv`
+- 大盤指數：`stockHistory/taiwan_index_data.csv`
 
 ### 2. 執行資產再平衡分析
 
@@ -86,6 +97,7 @@ python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --
 ## 注意事項
 
 1. 確保 `stockHistory` 目錄中有正確的股票資料檔案
+2. 下載資料時請注意 API 請求頻率限制
 3. 建議先使用歷史數據進行回測
 4. 實盤交易前請先小額測試
 5. 定期檢視策略表現並進行優化
