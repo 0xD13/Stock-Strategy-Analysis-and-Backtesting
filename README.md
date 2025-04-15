@@ -112,7 +112,7 @@ python strategy/rebalance_strategy.py --data_file data/twse/2330.csv --cash_rati
 
 ## 未來改進
 
-1. 加入其他交易策略
+1. 加入其他交易策略（歡迎提供）
 2. 加入更多市場撈取功能
 3. 加入 技術分析工具
 4. 實現自動化交易功能
