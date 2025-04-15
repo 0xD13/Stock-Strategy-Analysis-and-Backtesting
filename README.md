@@ -109,3 +109,62 @@ python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --
 3. 優化交易執行策略
 4. 加入更多資產類別
 5. 實現自動化交易功能
+
+## 自動更新股票資料
+
+本專案提供自動更新股票資料的功能，使用 GitHub Actions 每天自動抓取最新的股票數據。
+
+### 設定方法
+
+1. 複製 `.github/workflows/update_stock_data.yml` 到你的專案中
+2. 修改 workflow 文件中的股票代號，例如：
+   ```yaml
+   - name: Update stock data
+     run: |
+       # 更新大盤指數
+       python twse_stock_fetcher.py --taiwan_index
+       
+       # 更新指定的股票
+       python twse_stock_fetcher.py --stock_symbol 0050
+       python twse_stock_fetcher.py --stock_symbol 2330
+   ```
+
+### 重要注意事項
+
+1. **首次使用前請先手動抓取歷史資料**：
+   ```bash
+   # 抓取大盤指數歷史資料
+   python twse_stock_fetcher.py --taiwan_index --start_date 20140101
+   
+   # 抓取個股歷史資料
+   python twse_stock_fetcher.py --stock_symbol 0050 --start_date 20140101
+   ```
+   
+   這是因為：
+   - 證交所 API 有請求頻率限制
+   - 自動更新只會抓取最新資料
+   - 建議先手動抓取完整歷史資料，避免被鎖 IP
+
+2. 更新時間設定為每天台灣時間 15:00（收盤後）
+3. 資料會保存在 `stockHistory` 目錄下
+4. 可以手動觸發更新（在 GitHub Actions 頁面點擊 "Run workflow"）
+
+### 資料格式
+
+- 大盤指數：`stockHistory/taiwan_index_data.csv`
+- 個股資料：`stockHistory/stock_XXXX_data.csv`
+
+### 常見問題
+
+1. **為什麼要手動抓取歷史資料？**
+   - 避免頻繁請求被證交所鎖 IP
+   - 確保有完整的歷史資料
+   - 自動更新只會抓取最新資料
+
+2. **如何修改更新頻率？**
+   - 修改 workflow 中的 cron 設定
+   - 例如：改為每週更新 `0 7 * * 1`（每週一 15:00）
+
+3. **如何添加更多股票？**
+   - 在 workflow 中添加新的 `--stock_symbol` 命令
+   - 記得先手動抓取該股票的歷史資料
