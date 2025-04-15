@@ -40,11 +40,24 @@ def process_and_save_monthly(date, stock_no, output_file):
             'Volume': df['成交股數'].str.replace(',', '')
         })
 
-        # 如果檔案不存在，寫入標頭；如果存在，追加資料
-        if not os.path.exists(output_file):
-            df_processed.to_csv(output_file, index=False, mode='w')
+        # 如果檔案存在，讀取現有資料並過濾重複日期
+        if os.path.exists(output_file):
+            existing_df = pd.read_csv(output_file)
+            # 找出新資料中不存在的日期
+            new_dates = set(df_processed['Date']) - set(existing_df['Date'])
+            # 只保留新日期的資料
+            df_processed = df_processed[df_processed['Date'].isin(new_dates)]
+            
+            if len(df_processed) > 0:
+                # 追加新資料
+                df_processed.to_csv(output_file, index=False, mode='a', header=False)
+                print(f"新增 {len(df_processed)} 筆資料")
+            else:
+                print("沒有新資料需要更新")
         else:
-            df_processed.to_csv(output_file, index=False, mode='a', header=False)
+            # 如果檔案不存在，寫入所有資料
+            df_processed.to_csv(output_file, index=False, mode='w')
+            print(f"新增 {len(df_processed)} 筆資料")
 
         return True
     return False
@@ -56,9 +69,9 @@ def get_last_date_from_file(output_file):
         df = pd.read_csv(output_file)
         last_date = df['Date'].iloc[-1]  # 取得最後一筆日期
         last_datetime = datetime.strptime(last_date, '%Y-%m-%d')
-        # 返回下個月的第一天
-        next_month = (last_datetime.replace(day=1) + timedelta(days=32)).replace(day=1)
-        return next_month
+        # 返回下一天
+        next_day = last_datetime + timedelta(days=1)
+        return next_day
     return None
 
 

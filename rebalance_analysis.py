@@ -176,7 +176,7 @@ class RebalanceAnalyzer:
 def main():
     # 設定命令列參數
     parser = argparse.ArgumentParser(description='資產再平衡策略分析')
-    parser.add_argument('--data_file', type=str, default='stock_00631L_data.csv', help='股票資料檔案')
+    parser.add_argument('--data_file', type=str, default='stockHistory/stock_00631L_data.csv', help='股票資料檔案')
     parser.add_argument('--initial_capital', type=float, default=1000000, help='初始資金')
     parser.add_argument('--cash_ratio', type=float, default=0.5, help='現金比例')
     parser.add_argument('--stock_ratio', type=float, default=0.5, help='股票比例')

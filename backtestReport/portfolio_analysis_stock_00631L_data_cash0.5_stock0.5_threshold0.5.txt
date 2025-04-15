@@ -1,5 +1,5 @@
 === 參數設定 ===
-股票資料: stock_00631L_data.csv
+股票資料: stockHistory/stock_00631L_data.csv
 初始資金: 1,000,000.00
 現金比例: 0.5
 股票比例: 0.5

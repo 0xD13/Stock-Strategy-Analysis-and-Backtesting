@@ -1,0 +1,41 @@
+name: Update Stock Data
+
+on:
+  schedule:
+    - cron: '0 7 * * *'  # 每天 UTC 07:00 (台灣時間 15:00) 運行
+  workflow_dispatch:  # 允許手動觸發
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas requests
+    
+    - name: Update stock data
+      run: |
+        # 更新大盤指數
+        python twse_stock_fetcher.py --taiwan_index
+        
+        # 更新指定的股票
+        python twse_stock_fetcher.py --stock_symbol 00632R
+        python twse_stock_fetcher.py --stock_symbol 00631L
+        python twse_stock_fetcher.py --stock_symbol 0050
+
+
+    - name: Commit and push if changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add stockHistory/
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update stock data [skip ci]" && git push) 
