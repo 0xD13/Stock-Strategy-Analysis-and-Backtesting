@@ -80,7 +80,7 @@ def fetch_stock_data(start_date, stock_no, output_file):
     last_date = get_last_date_from_file(output_file)
 
     if last_date:
-        print(f"檢測到現有資料，最後日期為 {last_date.strftime('%Y-%m-%d')}，從下個月開始抓取")
+        print(f"檢測到現有資料，最後日期為 {last_date.strftime('%Y-%m-%d')}，從隔天開始抓取")
         current_date = last_date
     else:
         print("沒有現有資料，從指定開始日期抓取")
@@ -141,7 +141,7 @@ def fetch_taiwan_index_data(start_date, output_file):
     last_date = get_last_date_from_file(output_file)
 
     if last_date:
-        print(f"檢測到現有資料，最後日期為 {last_date.strftime('%Y-%m-%d')}，從下個月開始抓取")
+        print(f"檢測到現有資料，最後日期為 {last_date.strftime('%Y-%m-%d')}，從隔天開始抓取")
         current_date = last_date
     else:
         print("沒有現有資料，從指定開始日期抓取")

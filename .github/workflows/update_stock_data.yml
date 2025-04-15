@@ -30,7 +30,7 @@ jobs:
         # 更新指定的股票
         python twse_stock_fetcher.py --stock_symbol 00632R
         python twse_stock_fetcher.py --stock_symbol 00631L
-        python twse_stock_fetcher.py --stock_symbol 0050
+        python twse_stock_fetcher.py --stock_symbol 2330
 
 
     - name: Commit and push if changed
