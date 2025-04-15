@@ -5,7 +5,7 @@ from datetime import datetime
 import argparse
 import os
 
-class RebalanceAnalyzer:
+class RebalanceStrategy:
     def __init__(self, data_file, initial_capital=1000000, cash_ratio=0.5, stock_ratio=0.5, rebalance_threshold=0.5, start_date=None):
         # 讀取資料
         self.df = pd.read_csv(data_file)
@@ -159,12 +159,13 @@ class RebalanceAnalyzer:
         plt.tight_layout()
         
         # 確保輸出目錄存在
-        output_dir = "backtestReport"
+        output_dir = "report"
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         
         # 生成圖表檔名
-        base_filename = f"portfolio_analysis_{os.path.splitext(os.path.basename(data_file))[0]}_cash{cash_ratio}_stock{stock_ratio}_threshold{rebalance_threshold}"
+        stock_code = os.path.splitext(os.path.basename(data_file))[0]
+        base_filename = f"portfolio_analysis_{stock_code}_cash{cash_ratio}_stock{stock_ratio}_threshold{rebalance_threshold}"
         if start_date:
             base_filename += f"_start{start_date.replace('-', '')}"
         filename = os.path.join(output_dir, base_filename + ".png")
@@ -176,7 +177,7 @@ class RebalanceAnalyzer:
 def main():
     # 設定命令列參數
     parser = argparse.ArgumentParser(description='資產再平衡策略分析')
-    parser.add_argument('--data_file', type=str, default='stockHistory/stock_00631L_data.csv', help='股票資料檔案')
+    parser.add_argument('--data_file', type=str, default='data/twse/00631L.csv', help='股票資料檔案')
     parser.add_argument('--initial_capital', type=float, default=1000000, help='初始資金')
     parser.add_argument('--cash_ratio', type=float, default=0.5, help='現金比例')
     parser.add_argument('--stock_ratio', type=float, default=0.5, help='股票比例')
@@ -185,8 +186,8 @@ def main():
     
     args = parser.parse_args()
     
-    # 初始化分析器
-    analyzer = RebalanceAnalyzer(
+    # 初始化策略
+    strategy = RebalanceStrategy(
         data_file=args.data_file,
         initial_capital=args.initial_capital,
         cash_ratio=args.cash_ratio,
@@ -195,19 +196,20 @@ def main():
         start_date=args.start_date
     )
     
-    # 計算資產價值
-    analyzer.calculate_portfolio_value()
+    # 執行策略
+    strategy.calculate_portfolio_value()
     
     # 計算績效指標
-    metrics = analyzer.calculate_metrics()
+    metrics = strategy.calculate_metrics()
     
     # 確保輸出目錄存在
-    output_dir = "backtestReport"
+    output_dir = "report"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
     # 生成報告檔名
-    base_filename = f"portfolio_analysis_{os.path.splitext(os.path.basename(args.data_file))[0]}_cash{args.cash_ratio}_stock{args.stock_ratio}_threshold{args.rebalance_threshold}"
+    stock_code = os.path.splitext(os.path.basename(args.data_file))[0]
+    base_filename = f"rebalance_report_{stock_code}_cash{args.cash_ratio}_stock{args.stock_ratio}_threshold{args.rebalance_threshold}"
     if args.start_date:
         base_filename += f"_start{args.start_date.replace('-', '')}"
     
@@ -233,7 +235,7 @@ def main():
         
         # 寫入交易明細
         f.write("=== 交易明細 ===\n")
-        trades_df = analyzer.get_trade_details()
+        trades_df = strategy.get_trade_details()
         if trades_df is not None:
             f.write(trades_df.to_string())
         else:
@@ -241,7 +243,7 @@ def main():
         f.write("\n\n")
         
         # 寫入最終資產配置
-        final_portfolio = analyzer.portfolio_value[-1]
+        final_portfolio = strategy.portfolio_value[-1]
         f.write("=== 最終資產配置 ===\n")
         f.write(f"持股價值: {final_portfolio['stocks']:,.2f}\n")
         f.write(f"現金量: {final_portfolio['cash']:,.2f}\n")
@@ -250,7 +252,7 @@ def main():
         f.write(f"現金比例: {(final_portfolio['cash'] / final_portfolio['total_value'] * 100):.2f}%\n")
     
     # 繪製圖表
-    chart_filename = analyzer.plot_results(
+    chart_filename = strategy.plot_results(
         args.data_file,
         args.cash_ratio,
         args.stock_ratio,

@@ -28,12 +28,12 @@ jobs:
     - name: Update stock data
       run: |
         # 更新大盤指數
-        python twse_stock_fetcher.py --taiwan_index
+        python fetcher/twse_stock_fetcher.py --taiwan_index
         
         # 更新指定的股票
-        python twse_stock_fetcher.py --stock_symbol 00632R
-        python twse_stock_fetcher.py --stock_symbol 00631L
-        python twse_stock_fetcher.py --stock_symbol 2330
+        python fetcher/twse_stock_fetcher.py --stock_symbol 00632R
+        python fetcher/twse_stock_fetcher.py --stock_symbol 00631L
+        python fetcher/twse_stock_fetcher.py --stock_symbol 2330
 
 
     - name: Commit and push if changed

@@ -177,12 +177,12 @@ def main():
     start_date = args.start_date
 
     if args.taiwan_index:
-        output_file = 'stockHistory/taiwan_index_data.csv'
+        output_file = 'data/twse/^TWII.csv'  # 大盤指數資料
         print("開始抓取大盤指數資料...")
         fetch_taiwan_index_data(start_date, output_file)
     else:
         stock_no = args.stock_symbol
-        output_file = f'stockHistory/stock_{stock_no}_data.csv'
+        output_file = f'data/twse/{stock_no}.csv'  # 個股資料
         print(f"開始抓取股票 {stock_no} 的資料...")
         fetch_stock_data(start_date, stock_no, output_file)
 

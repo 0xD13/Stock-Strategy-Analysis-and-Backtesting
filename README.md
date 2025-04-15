@@ -1,8 +1,22 @@
-# AutoTrader
+# Stock Strategy Analysis and Backtesting
 
-這是一個自動交易系統，主要實現資產再平衡策略。
+這是一個股票分析系統，主要進行各種策略的回測與分析。
+
+
 
 ## 功能特點
+
+### 撈取台股資料
+- 支援下載台股大盤指數和個股資料
+- 可自定義下載時間範圍
+- 資料格式包含：
+  - 日期
+  - 開盤價
+  - 最高價
+  - 最低價
+  - 收盤價
+- 自動處理資料格式轉換
+- 支援自動更新機制（[詳細](#自動更新股票資料)）
 
 ### 資產再平衡策略 (Rebalance Strategy)
 - 維持固定比例的資產配置（如50:50的股票和現金）
@@ -19,19 +33,19 @@
 
 ```
 AutoTrader/
-├── backtestReport/          # 回測報告和圖表輸出目錄
-├── stockHistory/            # 股票歷史資料目錄
-├── rebalance_analysis.py    # 資產再平衡分析程式
-├── twse_stock_fetcher.py    # 台股資料下載程式
-├── requirements.txt         # 專案依賴套件
-└── README.md                # 專案說明文件
+├── data/                     # 市場資料目錄
+│   └── twse/                 # 台股資料
+│       ├── ^TWII.csv         # 大盤指數資料
+│       └── 00631L.csv        # 個股資料
+├── fetcher/                  # 資料抓取程式
+│   └── twse_stock_fetcher.py
+├── strategy/                 # 交易策略
+│   └── rebalance_strategy.py # 資產再平衡策略
+├── report/                   # 回測報告和圖表
+├── requirements.txt          # 專案依賴套件
+└── README.md                 # 專案說明文件
 ```
 
-## 安裝需求
-
-```bash
-pip install -r requirements.txt
-```
 
 ## 使用說明
 
@@ -39,12 +53,12 @@ pip install -r requirements.txt
 
 #### 下載個股資料
 ```bash
-python twse_stock_fetcher.py --stock_symbol 2330 --start_date 20200101
+python fetcher/twse_stock_fetcher.py --stock_symbol 2330 --start_date 20200101
 ```
 
 #### 下載大盤指數資料
 ```bash
-python twse_stock_fetcher.py --taiwan_index --start_date 20200101
+python fetcher/twse_stock_fetcher.py --taiwan_index --start_date 20200101
 ```
 
 參數說明：
@@ -53,32 +67,29 @@ python twse_stock_fetcher.py --taiwan_index --start_date 20200101
 - `--start_date`: 開始日期，格式：YYYYMMDD（預設：20140101）
 
 輸出檔案：
-- 個股資料：`stockHistory/stock_{股票代碼}_data.csv`
-- 大盤指數：`stockHistory/taiwan_index_data.csv`
+- 個股資料：`data/twse/{股票代碼}.csv`
+- 大盤指數：`data/twse/^TWII.csv`
 
 ### 2. 執行資產再平衡分析
 
 ```bash
-python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --stock_ratio 0.5 --rebalance_threshold 0.5
+python strategy/rebalance_strategy.py --data_file data/twse/2330.csv --cash_ratio 0.5 --stock_ratio 0.5 --rebalance_threshold 0.5
 ```
 
-參數說明：
-- `--data_file`: 股票資料檔案（預設：stock_2330_data.csv）
+#### 參數說明
+- `--data_file`: 股票資料檔案（預設：data/twse/00631L.csv）
 - `--initial_capital`: 初始資金（預設：1,000,000）
 - `--cash_ratio`: 現金比例（預設：0.5）
 - `--stock_ratio`: 股票比例（預設：0.5）
 - `--rebalance_threshold`: 再平衡觸發閾值（預設：0.5）
 - `--start_date`: 開始日期，格式：YYYY-MM-DD（選填）
 
-## 輸出檔案
+#### 輸出檔案
 
-### 資產再平衡策略
-- `backtestReport/portfolio_analysis_{股票代碼}_cash{現金比例}_stock{股票比例}_threshold{閾值}.png`：資產配置變化圖表
-- `backtestReport/portfolio_analysis_{股票代碼}_cash{現金比例}_stock{股票比例}_threshold{閾值}.txt`：詳細分析報告
+- `report/portfolio_analysis_{股票代碼}_cash{現金比例}_stock{股票比例}_threshold{閾值}.png`：資產配置變化圖表
+- `report/portfolio_analysis_{股票代碼}_cash{現金比例}_stock{股票比例}_threshold{閾值}.txt`：詳細分析報告
 
-## 報告內容
-
-### 資產再平衡策略報告包含：
+#### 報告內容
 1. 參數設定
 2. 績效指標：
    - 總報酬率
@@ -96,23 +107,20 @@ python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --
 
 ## 注意事項
 
-1. 確保 `stockHistory` 目錄中有正確的股票資料檔案
+1. 確保 `data/twse` 目錄中有正確的股票資料檔案
 2. 下載資料時請注意 API 請求頻率限制
-3. 建議先使用歷史數據進行回測
-4. 實盤交易前請先小額測試
-5. 定期檢視策略表現並進行優化
 
 ## 未來改進
 
-1. 實現動態參數調整
-2. 加入風險管理機制
-3. 優化交易執行策略
-4. 加入更多資產類別
-5. 實現自動化交易功能
+1. 加入其他交易策略
+2. 加入更多市場撈取功能
+3. 加入 技術分析工具
+4. 實現自動化交易功能
 
 ## 自動更新股票資料
 
-本專案提供自動更新股票資料的功能，使用 GitHub Actions 每天自動抓取最新的股票數據。
+本專案提供自動更新股票資料的功能，使用 GitHub Actions 每天自動抓取最新的股票數據。  
+更新時間設定為每天台灣時間 15:00（收盤後）
 
 ### 設定方法
 
@@ -122,49 +130,12 @@ python rebalance_analysis.py --data_file stock_2330_data.csv --cash_ratio 0.5 --
    - name: Update stock data
      run: |
        # 更新大盤指數
-       python twse_stock_fetcher.py --taiwan_index
+       python fetcher/twse_stock_fetcher.py --taiwan_index
        
        # 更新指定的股票
-       python twse_stock_fetcher.py --stock_symbol 0050
-       python twse_stock_fetcher.py --stock_symbol 2330
+       python fetcher/twse_stock_fetcher.py --stock_symbol 0050
+       python fetcher/twse_stock_fetcher.py --stock_symbol 2330
    ```
 
-### 重要注意事項
-
-1. **首次使用前請先手動抓取歷史資料**：
-   ```bash
-   # 抓取大盤指數歷史資料
-   python twse_stock_fetcher.py --taiwan_index --start_date 20140101
-   
-   # 抓取個股歷史資料
-   python twse_stock_fetcher.py --stock_symbol 0050 --start_date 20140101
-   ```
-   
-   這是因為：
-   - 證交所 API 有請求頻率限制
-   - 自動更新只會抓取最新資料
-   - 建議先手動抓取完整歷史資料，避免被鎖 IP
-
-2. 更新時間設定為每天台灣時間 15:00（收盤後）
-3. 資料會保存在 `stockHistory` 目錄下
-4. 可以手動觸發更新（在 GitHub Actions 頁面點擊 "Run workflow"）
-
-### 資料格式
-
-- 大盤指數：`stockHistory/taiwan_index_data.csv`
-- 個股資料：`stockHistory/stock_XXXX_data.csv`
-
-### 常見問題
-
-1. **為什麼要手動抓取歷史資料？**
-   - 避免頻繁請求被證交所鎖 IP
-   - 確保有完整的歷史資料
-   - 自動更新只會抓取最新資料
-
-2. **如何修改更新頻率？**
-   - 修改 workflow 中的 cron 設定
-   - 例如：改為每週更新 `0 7 * * 1`（每週一 15:00）
-
-3. **如何添加更多股票？**
-   - 在 workflow 中添加新的 `--stock_symbol` 命令
-   - 記得先手動抓取該股票的歷史資料
+> [!IMPORTANT]  
+> 首次使用前請先手動抓取歷史資料，避免撈取請求過多或過久導致意外錯誤
