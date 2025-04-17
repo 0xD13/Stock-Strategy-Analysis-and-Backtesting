@@ -171,7 +171,7 @@ class RebalanceStrategy:
         
         # 生成圖表檔名
         stock_code = os.path.splitext(os.path.basename(data_file))[0]
-        base_filename = f"portfolio_analysis_{stock_code}_cash{cash_ratio}_stock{stock_ratio}_threshold{rebalance_threshold}"
+        base_filename = f"rebalance_report_{stock_code}_cash{cash_ratio}_stock{stock_ratio}_threshold{rebalance_threshold}"
         if start_date:
             base_filename += f"_start{start_date.replace('-', '')}"
         filename = os.path.join(output_dir, base_filename + ".png")
