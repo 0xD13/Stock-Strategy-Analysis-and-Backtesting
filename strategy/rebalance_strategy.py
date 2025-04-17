@@ -25,10 +25,16 @@ class RebalanceStrategy:
         
         # 初始化變數
         self.portfolio_value = []
-        self.trades = []
         self.current_cash = initial_capital * self.cash_ratio
-        self.current_stocks = initial_capital * self.stock_ratio / self.df['Close'].iloc[0]
         self.last_rebalance_price = self.df['Close'].iloc[0]
+        self.current_stocks = initial_capital * self.stock_ratio / self.df['Close'].iloc[0]
+        self.trades = [{
+            'date': self.df.index[0],
+            'type': 'buy',
+            'price': self.last_rebalance_price,
+            'shares': self.current_stocks,
+            'value': initial_capital * self.stock_ratio
+        }]
     
     def calculate_portfolio_value(self):
         for i in range(len(self.df)):
