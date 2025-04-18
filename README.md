@@ -32,7 +32,7 @@
 ### 股息分析功能
 - 自動分析 ETF 的未來配息能力
   - 淨值不變的情況，以同樣的配息金額可以持續發幾年
-  - 分析公式：(淨值-面額)/當次配息金額
+  - 分析公式：(淨值-面額)/當次配息金額/每年配息次數
 - 只需將股息資料檔案上傳至 `data/twse/dividend/` 目錄即可觸發分析
 - 股息資料檔案格式：
   - 檔案名稱：`{股票代碼}.csv`
@@ -41,6 +41,7 @@
     - NAV: 淨值
     - Dividend: 配息金額
     - Payouts Years: 配息次數
+    - Par Value: 面額
 - 分析結果將自動生成圖表並儲存於 `report/` 目錄
 
 ## 目錄結構
@@ -131,6 +132,7 @@ python strategy/rebalance_strategy.py --data_file data/twse/2330.csv --cash_rati
     - NAV: 淨值
     - Dividend: 配息金額
     - Payouts Years: 配息次數
+    - Par Value: 面額
 - 系統會自動分析並生成圖表
 - 分析結果將儲存於 `report/future_dividend_payment_capacity_{股票代碼}.png`
 
