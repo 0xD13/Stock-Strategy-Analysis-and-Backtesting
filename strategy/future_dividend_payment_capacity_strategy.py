@@ -7,13 +7,14 @@ import os
 def calculate_future_payment_capacity(row):
     """
     計算未來配息能力
-    計算方式：(Nav-30)/Dividend/Payouts Years
+    計算方式：(Nav-Par Value)/Dividend/Payouts Years
     """
     nav = float(row['NAV'])
     dividend = float(row['Dividend'])
     payouts = float(row['Payouts Years'])
+    par_value = float(row['Par Value'])
     
-    return (nav - 30) / dividend / payouts
+    return (nav - par_value) / dividend / payouts
 
 def analyze_dividend_payment_capacity(stock_symbol):
     """
