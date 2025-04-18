@@ -41,7 +41,7 @@ def analyze_dividend_payment_capacity(stock_symbol):
     df['Future_Payment_Capacity'] = df.apply(calculate_future_payment_capacity, axis=1)
     
     # 設定中文字體
-    plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+    plt.rcParams['font.sans-serif'] = ['Noto Sans CJK TC', 'Noto Sans CJK JP', 'Noto Sans CJK KR', 'Noto Sans CJK SC']
     plt.rcParams['axes.unicode_minus'] = False
     
     # 創建圖表來視覺化分析結果
