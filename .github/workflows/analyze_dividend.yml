@@ -1,0 +1,44 @@
+name: Analyze ETF Dividend Payment Capacity
+
+on:
+  push:
+    paths:
+      - 'data/twse/dividend/*.csv'
+  workflow_dispatch:  # 允許手動觸發
+
+permissions:
+  contents: write
+
+jobs:
+  analyze-dividend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run dividend analysis
+      run: |
+        # 找出所有修改的 CSV 檔案
+        for file in $(git diff --name-only HEAD^ HEAD | grep 'data/twse/dividend/.*\.csv$'); do
+          # 從檔案路徑中提取股票代號
+          stock_symbol=$(basename "$file" .csv)
+          # 執行分析
+          python strategy/future_dividend_payment_capacity_strategy.py "$stock_symbol"
+        done
+    
+    - name: Commit and push if changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add report/future_dividend_payment_capacity_*.png
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update dividend analysis [skip ci]" && git push) 
