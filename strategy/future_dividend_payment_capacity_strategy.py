@@ -50,7 +50,7 @@ def analyze_dividend_payment_capacity(stock_symbol):
             marker='o', linestyle='-', linewidth=2)
     
     # 設定圖表標題和軸標籤
-    plt.title(f'{stock_symbol} 元大高息低波 ETF 未來配息能力', fontsize=14)
+    plt.title(f'{stock_symbol} 未來配息能力', fontsize=14)
     plt.xlabel('除息日期', fontsize=12)
     plt.ylabel('未來配息能力指標', fontsize=12)
     

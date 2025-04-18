@@ -29,6 +29,18 @@
 - 提供詳細的交易記錄和績效分析
 - 生成資產配置變化圖表
 
+### 股息分析功能
+- 自動分析 ETF 的未來配息能力
+- 只需將股息資料檔案上傳至 `data/twse/dividend/` 目錄即可觸發分析
+- 股息資料檔案格式：
+  - 檔案名稱：`{股票代碼}.csv`
+  - 欄位包含：
+    - Ex-Dividend Date: 除息日期
+    - NAV: 淨值
+    - Dividend: 配息金額
+    - Payouts Years: 配息次數
+- 分析結果將自動生成圖表並儲存於 `report/` 目錄
+
 ## 目錄結構
 
 ```
@@ -36,11 +48,14 @@ AutoTrader/
 ├── data/                     # 市場資料目錄
 │   └── twse/                 # 台股資料
 │       ├── ^TWII.csv         # 大盤指數資料
-│       └── 00631L.csv        # 個股資料
+│       ├── 00631L.csv        # 個股資料
+│       └── dividend/         # 股息資料
+│           └── {股票代碼}.csv # 股息資料檔案
 ├── fetcher/                  # 資料抓取程式
 │   └── twse_stock_fetcher.py
 ├── strategy/                 # 交易策略
-│   └── rebalance_strategy.py # 資產再平衡策略
+│   ├── rebalance_strategy.py # 資產再平衡策略
+│   └── future_dividend_payment_capacity_strategy.py # 股息分析策略
 ├── report/                   # 回測報告和圖表
 ├── requirements.txt          # 專案依賴套件
 └── README.md                 # 專案說明文件
@@ -104,6 +119,18 @@ python strategy/rebalance_strategy.py --data_file data/twse/2330.csv --cash_rati
    - 總資產
    - 持股比例
    - 現金比例
+
+### 3. 股息分析
+- 將股息資料檔案上傳至 `data/twse/dividend/` 目錄
+- 檔案格式：
+  - 檔案名稱：`{股票代碼}.csv`
+  - 欄位：
+    - Ex-Dividend Date: 除息日期 (YYYY-MM-DD)
+    - NAV: 淨值
+    - Dividend: 配息金額
+    - Payouts Years: 配息次數
+- 系統會自動分析並生成圖表
+- 分析結果將儲存於 `report/future_dividend_payment_capacity_{股票代碼}.png`
 
 ## 注意事項
 
