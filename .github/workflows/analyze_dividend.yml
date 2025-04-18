@@ -25,6 +25,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
+    - name: Install fonts
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra
+    
     - name: Run dividend analysis
       run: |
         # 找出所有修改的 CSV 檔案
