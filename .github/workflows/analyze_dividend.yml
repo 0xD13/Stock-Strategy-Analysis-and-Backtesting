@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # 允許手動觸發
 
 permissions:
-  contents: read, write
+  contents: write
 
 jobs:
   analyze-dividend:
@@ -36,9 +36,25 @@ jobs:
           python strategy/future_dividend_payment_capacity_strategy.py "$stock_symbol"
         done
     
+    - name: Check for generated files
+      run: |
+        echo "Checking for generated files..."
+        ls -la report/
+        if [ -n "$(ls -A report/future_dividend_payment_capacity_*.png 2>/dev/null)" ]; then
+          echo "Found generated files"
+        else
+          echo "No files matching pattern found"
+          exit 0
+        fi
+    
     - name: Commit and push if changed
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add report/future_dividend_payment_capacity_*.png
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Update dividend analysis [skip ci]" && git push) 
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update dividend analysis [skip ci]"
+          git push
+        fi 
