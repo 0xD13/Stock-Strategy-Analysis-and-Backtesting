@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - 'data/twse/dividend/*.csv'
-  workflow_dispatch:  # 允許手動觸發
 
 permissions:
   contents: write
@@ -29,12 +28,19 @@ jobs:
     - name: Run dividend analysis
       run: |
         # 找出所有修改的 CSV 檔案
-        for file in $(git diff --name-only HEAD^ HEAD | grep 'data/twse/dividend/.*\.csv$'); do
-          # 從檔案路徑中提取股票代號
-          stock_symbol=$(basename "$file" .csv)
-          # 執行分析
-          python strategy/future_dividend_payment_capacity_strategy.py "$stock_symbol"
-        done
+        if [ "$(git rev-list --count HEAD)" -gt 1 ]; then
+          # 如果有前一個提交，比較變更
+          for file in $(git diff --name-only HEAD^ HEAD | grep 'data/twse/dividend/.*\.csv$'); do
+            stock_symbol=$(basename "$file" .csv)
+            python strategy/future_dividend_payment_capacity_strategy.py "$stock_symbol"
+          done
+        else
+          # 如果是第一次提交，處理所有 CSV 檔案
+          for file in data/twse/dividend/*.csv; do
+            stock_symbol=$(basename "$file" .csv)
+            python strategy/future_dividend_payment_capacity_strategy.py "$stock_symbol"
+          done
+        fi
     
     - name: Check for generated files
       run: |
