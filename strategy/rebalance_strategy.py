@@ -95,9 +95,14 @@ class RebalanceStrategy:
         portfolio_df = pd.DataFrame(self.portfolio_value)
         portfolio_df.set_index('date', inplace=True)
         
-        # 計算報酬率
+        # 計算再平衡策略的報酬率
         portfolio_df['returns'] = portfolio_df['total_value'].pct_change()
         total_return = (portfolio_df['total_value'].iloc[-1] / self.initial_capital - 1) * 100
+        
+        # 計算全額投資的報酬率
+        initial_price = self.df['Close'].iloc[0]
+        final_price = self.df['Close'].iloc[-1]
+        all_in_return = (final_price / initial_price - 1) * 100
         
         # 計算最大回撤
         portfolio_df['cummax'] = portfolio_df['total_value'].cummax()
@@ -112,6 +117,7 @@ class RebalanceStrategy:
         days = (portfolio_df.index[-1] - portfolio_df.index[0]).days
         years = days / 365
         annual_return = ((1 + total_return/100) ** (1/years) - 1) * 100
+        all_in_annual_return = ((1 + all_in_return/100) ** (1/years) - 1) * 100
         
         # 計算夏普比率
         risk_free_rate = 0.01  # 假設無風險利率1%
@@ -123,7 +129,9 @@ class RebalanceStrategy:
             '年化報酬率': f"{annual_return:.2f}%",
             '最大回撤': f"{max_drawdown:.2f}%",
             '交易次數': num_trades,
-            '夏普比率': f"{sharpe_ratio:.2f}"
+            '夏普比率': f"{sharpe_ratio:.2f}",
+            '全額投資總報酬率': f"{all_in_return:.2f}%",
+            '全額投資年化報酬率': f"{all_in_annual_return:.2f}%"
         }
     
     def get_trade_details(self):
@@ -141,11 +149,16 @@ class RebalanceStrategy:
         portfolio_df = pd.DataFrame(self.portfolio_value)
         portfolio_df.set_index('date', inplace=True)
         
+        # 計算全額投資的價值曲線
+        initial_price = self.df['Close'].iloc[0]
+        all_in_value = self.initial_capital * (self.df['Close'] / initial_price)
+        
         plt.figure(figsize=(12, 8))
         
         # 繪製總資產價值
         plt.subplot(2, 1, 1)
-        plt.plot(portfolio_df.index, portfolio_df['total_value'], label='Total Portfolio Value')
+        plt.plot(portfolio_df.index, portfolio_df['total_value'], label='再平衡策略')
+        plt.plot(portfolio_df.index, all_in_value, label='全額投資', linestyle='--')
         plt.title('Portfolio Value Trend')
         plt.xlabel('Date')
         plt.ylabel('Value')
